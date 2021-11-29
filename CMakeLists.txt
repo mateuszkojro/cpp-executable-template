@@ -1,5 +1,18 @@
 cmake_minimum_required(VERSION 3.20)
-project(application_name)
+project(application_name VERSION 0.0.1)
+
+# Compiler detection
+set(COMPILER Unknown)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  set(COMPILER Clang)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(COMPILER GCC)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+  set(COMPILER Intel)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  set(COMPILER MSVC)
+endif()
+message("-- Compiler detected: " ${COMPILER})
 
 set(CMAKE_CXX_STANDARD 17)
 
