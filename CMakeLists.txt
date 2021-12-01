@@ -5,6 +5,40 @@ message("")
 message("=== CONFIGURING ENVIROMENT ${CMAKE_PROJECT_NAME} - START  ===")
 message("")
 
+# Operation system detection
+message(CHECK_START "Checking operating system")
+if(WIN32)
+  set(OS Windows)
+  add_compile_definitions(MK_OS_WINDOWS)
+  message(CHECK_PASS "Windows detected")
+elseif(UNIX)
+  set(OS Unix)
+  add_compile_definitions(MK_OS_UNIX)
+  message(CHECK_PASS "Unix detected")
+else()
+  message(CHECK_FAIL "Unknown operating system")
+endif()
+
+# Build type detection
+message(CHECK_START "Checking build type")
+if(CMAKE_BUILD_TYPE STREQUAL Release OR CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
+  set(RELEASE)
+  add_compile_definitions(MK_BUILD_RELEASE)
+  message(CHECK_PASS "Release")
+elseif(CMAKE_BUILD_TYPE STREQUAL Debug)
+  set(RELEASE)
+  add_compile_definitions(MK_BUILD_DEBUG)
+  message(CHECK_PASS "Debug")
+elseif(CMAKE_BUILD_TYPE STREQUAL "")
+  set(DEBUG)
+  add_compile_definitions(MK_BUILD_DEBUG)
+  message(CHECK_PASS "Unknown build type defaulting to debug")
+else()
+set(DEBUG)
+  add_compile_definitions(MK_BUILD_DEBUG)
+  message(CHECK_FAIL "Unsuported build type: \"${CMAKE_BUILD_TYPE}\" defaulting to debug")
+endif()
+
 # Compiler detection
 message(CHECK_START "Checking compiler")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -24,6 +58,8 @@ else()
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
+
+# Check what libraries are available
 
 set(LIBRARIES_TO_LINK)
 
