@@ -57,7 +57,7 @@ else()
   message(CHECK_FAIL "Unknown compiler")
 endif()
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
 # Check what libraries are available
 
@@ -79,9 +79,10 @@ endif()
 message(CHECK_START "Looking for ROOT")
 find_package(ROOT CONFIG)
 if(${ROOT_FOUND})
-    include_directories(ROOT_INCLUDE_DIRS)
-    list(APPEND ROOT::Core ROOT::Gui)
-    add_compile_definitions(MK_WITH_PLOT)
+    include(${ROOT_USE_FILE})
+    include_directories(${ROOT_INCLUDE_DIRS})
+    list(APPEND LIBRARIES_TO_LINK ROOT::Core ROOT::Gui)
+    add_compile_definitions(MK_WITH_ROOT)
     message(CHECK_PASS "found")
 else()
     message(CHECK_FAIL "not found")
@@ -109,4 +110,5 @@ include_directories(${INCLUDE_DIRS})
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${CMAKE_PROJECT_NAME} ${LIBRARIES_TO_LINK})
+message("-- Linking ${CMAKE_PROJECT_NAME} against: ${LIBRARIES_TO_LINK}")
+target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC ${LIBRARIES_TO_LINK})
