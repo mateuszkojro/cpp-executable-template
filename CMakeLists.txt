@@ -102,6 +102,54 @@ else()
     message(CHECK_FAIL "not found")
 endif()
 
+message(CHECK_START "Looking for BOOST")
+if(true)
+    list(APPEND CMAKE_MESSAGE_INDENT "    ")
+    set(BOOST_URL "https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.bz2" CACHE STRING "Boost download URL")
+
+    include(FetchContent)
+    FetchContent_Declare(
+      Boost
+      URL ${BOOST_URL}
+    )
+    FetchContent_GetProperties(Boost)
+
+    if(NOT Boost_POPULATED)
+      message(STATUS "Fetching Boost")
+      FetchContent_Populate(Boost)
+      message(STATUS "Fetching Boost - done")
+      set(BOOST_SOURCE ${boost_SOURCE_DIR})
+    else()
+      message(STATUS "Boost already fetched")
+    endif()
+
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
+
+    set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
+
+    # Define the header-only Boost target
+    add_library(Boost::boost INTERFACE IMPORTED GLOBAL)
+    target_include_directories(Boost::boost SYSTEM INTERFACE ${BOOST_SOURCE})
+
+    # Disable autolink
+    target_compile_definitions(Boost::boost INTERFACE BOOST_ALL_NO_LIB=1)
+
+    target_compile_definitions(Boost::boost INTERFACE
+      $<$<CONFIG:Release>:BOOST_DISABLE_ASSERT>
+      BOOST_SYSTEM_NO_DEPRECATED
+      BOOST_THREAD_VERSION=4
+      BOOST_THREAD_USES_CHRONO
+      BOOST_THREAD_PROVIDES_EXECUTORS
+    )
+
+    list(APPEND LIBRARIES_TO_LINK Boost::boost)
+    add_compile_definitions(MK_WITH_BOOST)
+    list(POP_BACK CMAKE_MESSAGE_INDENT)
+    message(CHECK_PASS "downloaded to: ${BOOST_SOURCE}")
+else()
+    message(CHECK_FAIL "not found")
+endif()
+
 # List of all source files to compile and link
 set(SOURCES src/main.cpp)
 
@@ -113,5 +161,5 @@ include_directories(${INCLUDE_DIRS})
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 
-message("-- Linking ${CMAKE_PROJECT_NAME} against: ${LIBRARIES_TO_LINK}")
+
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC ${LIBRARIES_TO_LINK})
