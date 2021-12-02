@@ -76,7 +76,10 @@ else()
     message(CHECK_FAIL "not found")
 endif()
 
+
 message(CHECK_START "Looking for ROOT")
+# Full list of avaliable ROOT libraries 
+# https://cliutils.gitlab.io/modern-cmake/chapters/packages/ROOT.html
 find_package(ROOT CONFIG)
 if(${ROOT_FOUND})
     include(${ROOT_USE_FILE})
