@@ -5,6 +5,19 @@ message("")
 message("=== CONFIGURING ENVIROMENT ${CMAKE_PROJECT_NAME} - START  ===")
 message("")
 
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_STATIC_LIBS "Build static libraries" OFF)
+option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_EXAMPLES "Build examples" OFF)
+option(BUILD_DOCS "Build documentation" OFF)
+option(BUILD_BENCHMARKS "Build benchmarks" OFF)
+
+option(WITH_EIGEN "Enable Eigen support" OFF)
+option(WITH_ROOT "Enable ROOT support" OFF)
+option(WITH_BOOST "Enable BOOST support" ON)
+option(WITH_SCIPLOT "Enable Scilplot support" OFF)
+
+
 # Operation system detection
 message(CHECK_START "Checking operating system")
 if(WIN32)
@@ -63,9 +76,10 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(LIBRARIES_TO_LINK)
 
+if(${WITH_EIGEN})
 message(CHECK_START "Looking for Eigen")
 set(EIGEN_DIR ${CMAKE_SOURCE_DIR}/lib/eigen/)
-if(EXISTS ${EIGEN_DIR})
+if(EXISTS ${EIGEN_DIR} AND ${WITH_EIGEN})
     list(APPEND CMAKE_MESSAGE_INDENT "    ")
     include_directories(${EIGEN_DIR})
     add_subdirectory(${EIGEN_DIR})
@@ -75,13 +89,14 @@ if(EXISTS ${EIGEN_DIR})
 else()
     message(CHECK_FAIL "not found")
 endif()
+endif()
 
-
+if(${WITH_ROOT})
 message(CHECK_START "Looking for ROOT")
 # Full list of avaliable ROOT libraries 
 # https://cliutils.gitlab.io/modern-cmake/chapters/packages/ROOT.html
 find_package(ROOT CONFIG)
-if(${ROOT_FOUND})
+if(${ROOT_FOUND} AND ${WITH_ROOT})
     include(${ROOT_USE_FILE})
     include_directories(${ROOT_INCLUDE_DIRS})
     list(APPEND LIBRARIES_TO_LINK ROOT::Core ROOT::Gui)
@@ -90,8 +105,9 @@ if(${ROOT_FOUND})
 else()
     message(CHECK_FAIL "not found")
 endif()
+endif()
 
-
+if(${WITH_EIGEN})
 message(CHECK_START "Looking for Sciplot")
 set(SCIPLOT_DIR ${CMAKE_SOURCE_DIR}/lib/sciplot/)
 if(EXISTS ${SCIPLOT_DIR})
@@ -101,7 +117,9 @@ if(EXISTS ${SCIPLOT_DIR})
 else()
     message(CHECK_FAIL "not found")
 endif()
+endif()
 
+if(${WITH_BOOST})
 message(CHECK_START "Looking for BOOST")
 if(true)
     list(APPEND CMAKE_MESSAGE_INDENT "    ")
@@ -148,6 +166,7 @@ if(true)
     message(CHECK_PASS "downloaded to: ${BOOST_SOURCE}")
 else()
     message(CHECK_FAIL "not found")
+endif()
 endif()
 
 # List of all source files to compile and link
