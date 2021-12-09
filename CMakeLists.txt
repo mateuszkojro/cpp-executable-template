@@ -14,8 +14,9 @@ option(BUILD_BENCHMARKS "Build benchmarks" OFF)
 
 option(WITH_EIGEN "Enable Eigen support" OFF)
 option(WITH_ROOT "Enable ROOT support" OFF)
-option(WITH_BOOST "Enable BOOST support" ON)
+option(WITH_BOOST "Enable BOOST support" OFF)
 option(WITH_SCIPLOT "Enable Scilplot support" OFF)
+option(BUILD_TYPE "Build type" "Release")
 
 
 # Operation system detection
